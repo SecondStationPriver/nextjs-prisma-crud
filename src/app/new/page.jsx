@@ -8,19 +8,29 @@ function NewPage({ params }) {
   const [description, setDescription] = useState('')
 
   useEffect(() => {
-    fetch(`/api/tasks/${params.id}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setTitle(data.title)
-        setDescription(data.description)
-      })
+    if (params.id) {
+      fetch(`/api/tasks/${params.id}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setTitle(data.title)
+          setDescription(data.description)
+        })
+    }
   }, [])
 
   const onSubmit = async (e) => {
     e.preventDefault()
 
     if (params.id) {
-      console.log('updating')
+      const res = await fetch(`/api/tasks/${params.id}`, {
+        method: 'PUT',
+        body: JSON.stringify({ title, description }),
+        headers: {
+          'content-Type': 'application/json',
+        },
+      })
+      const data = await res.json()
+      console.log(data)
     } else {
       const res = await fetch('/api/tasks', {
         method: 'POST',
@@ -32,7 +42,8 @@ function NewPage({ params }) {
       const data = await res.json()
     }
 
-    //router.push('/')
+    router.refresh()
+    router.push('/')
   }
 
   return (
@@ -61,9 +72,32 @@ function NewPage({ params }) {
           value={description}
         ></textarea>
 
-        <button className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px4 rounded'>
-          Crear
-        </button>
+        <div className='flex justify-between'>
+          <button
+            className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'
+            type='submit'
+          >
+            Crear
+          </button>
+
+          {params.id && (
+            <button
+              className='bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded'
+              type='button'
+              onClick={async () => {
+                const res = await fetch(`/api/tasks/${params.id}`, {
+                  method: 'DELETE',
+                })
+                const data = res.json()
+
+                router.refresh()
+                router.push('/')
+              }}
+            >
+              Delete
+            </button>
+          )}
+        </div>
       </form>
     </div>
   )
