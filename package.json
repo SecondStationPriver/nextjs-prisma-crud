@@ -10,8 +10,11 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@prisma/adapter-pg": "^5.9.1",
     "@prisma/client": "^5.9.1",
+    "@vercel/postgres": "^0.7.2",
     "next": "14.1.0",
+    "pg": "^8.11.3",
     "react": "^18",
     "react-dom": "^18"
   },
